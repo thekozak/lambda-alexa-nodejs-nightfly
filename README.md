@@ -6,8 +6,8 @@ The Alexa Skills Kit now allows developers to build skills that play long-form a
 
 1. Clone the project and package the skill:
 ```bash
-git clone https://github.com/thekozak/lambda-alexa-nodejs-audio-player.git
-cd lambda-alexa-nodejs-audio-player/js
+git clone https://github.com/thekozak/lambda-alexa-nodejs-nightfly.git
+cd lambda-alexa-nodejs-nightfly/js
 npm install
 zip -r ../audio-player.zip *
 ```
