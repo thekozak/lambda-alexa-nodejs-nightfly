@@ -51,8 +51,11 @@ var stateHandlers = {
 
                 var that = this;
 
+
+                var date = "%s-%s-%s"%(i.year, i.month, i.day)
+
                 // get list of tracks - TODO get today
-                httpGet('http://www.nightfly.fm/display/30.2478168,-97.7724371/2017-08-26', function(body) {
+                httpGet('http://www.nightfly.fm/display/30.2478168,-97.7724371/'+ date, function(body) {
                     console.log("body= " + body);
                     var events = JSON.parse(body);
                     console.log("events= " + events);
@@ -76,10 +79,18 @@ var stateHandlers = {
                 console.log('PlayAudio start - has playOrder');
                 controller.play.call(this);
             }
+            if (this.attributes['playOrder'] = 0) {
+                var message = 'No concerts avaliable on this date. Please choose a different day.';
+                this.response.speak(message).listen(message);
+                this.emit(':responseReady');
+            } else {
+               console.log('PlayAudio start - has playOrder');
+               controller.play.call(this);
+            }
         },
         'AMAZON.HelpIntent' : function () {
             console.log("help intent");
-            var message = 'Welcome to the AWS Podcast. You can say, play the audio, to begin the podcast.';
+            var message = 'Welcome to Nightfly Radio. You can say, play the audio, to begin the playlist.';
             this.response.speak(message).listen(message);
             this.emit(':responseReady');
         },
@@ -101,7 +112,7 @@ var stateHandlers = {
         },
         'Unhandled' : function () {
             console.log("unhandled");
-            var message = 'Sorry, I could not understand. Please say, play the audio, to begin the audio.';
+            var message = 'Sorry, I could not understand. Please say, play the audio, to begin the playlist.';
             this.response.speak(message).listen(message);
             this.emit(':responseReady');
         }
@@ -126,7 +137,7 @@ var stateHandlers = {
             var reprompt;
             if (this.attributes['playbackFinished']) {
                 this.handler.state = constants.states.START_MODE;
-                message = 'Welcome to the AWS Podcast. You can say, play the audio to begin the podcast.';
+                message = 'Welcome to the Nightfly Radio. You can say, play the audio to begin the playlist.';
                 reprompt = 'You can say, play the audio, to begin.';
             } else {
                 this.handler.state = constants.states.RESUME_DECISION_MODE;
@@ -153,7 +164,7 @@ var stateHandlers = {
         'AMAZON.HelpIntent' : function () {
             console.log("help intent");
             // This will called while audio is playing and a user says "ask <invocation_name> for help"
-            var message = 'You are listening to the AWS Podcast. You can say, Next or Previous to navigate through the playlist. ' +
+            var message = 'You are listening to Nightfly Radio. You can say, Next or Previous to navigate through the playlist. ' +
                 'At any time, you can say Pause to pause the audio and Resume to resume.';
             this.response.speak(message).listen(message);
             this.emit(':responseReady');
