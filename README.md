@@ -54,3 +54,49 @@ The sample project plays a pre-defined list of audio content defined in `js/audi
 * `audioEventHandlers.js` is where the skill handles AudioPlayer events.  These events are only expected in the PLAY_MODE state and are used to track the user's progress through the content. 
 
 You can learn more about the new [AudioPlayer interface](https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/custom-audioplayer-interface-reference) and [PlaybackController interface](https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/custom-playbackcontroller-interface-reference).
+
+
+## Test Lambda
+
+```
+{
+  "session": {
+    "new": true,
+    "sessionId": "SessionId.7a00fa10-2bbc-4bc1-9599-4d149c2d572f",
+    "application": {
+      "applicationId": "amzn1.ask.skill.ca116d16-c7da-4513-bcbe-b78b35e75d25"
+    },
+    "attributes": {},
+    "user": {
+      "userId": "amzn1.ask.account.AHWNRCXK46RQ27LHZNUCB5N3HZRLAP2ZGNWU45OFE7DLPS6BGNXSJDMELSJWCSN34SUX5XTMBQMY7RUBELJFQ2CVNW4CWJ4PGIOHX5GAEC5Q2QJQAMMIA6N2RKZOF5ZY4IGSXJEWJ6QAWGWRBMXDOSLLJQAXHQUXYCIKD6SOMUEZNXBFBMRYQ44GBT4DQLD24VZ4YKDDYCO3QII"
+    }
+  },
+  "request": {
+    "type": "IntentRequest",
+    "requestId": "EdwRequestId.6aea1e0a-722e-4617-b6bd-3424bd6542bf",
+    "intent": {
+      "name": "PlayAudio",
+      "slots": {}
+    },
+    "locale": "en-US",
+    "timestamp": "2017-08-22T02:18:34Z"
+  },
+  "context": {
+    "AudioPlayer": {
+      "playerActivity": "IDLE"
+    },
+    "System": {
+      "application": {
+        "applicationId": "amzn1.ask.skill.ca116d16-c7da-4513-bcbe-b78b35e75d25"
+      },
+      "user": {
+        "userId": "amzn1.ask.account.AHWNRCXK46RQ27LHZNUCB5N3HZRLAP2ZGNWU45OFE7DLPS6BGNXSJDMELSJWCSN34SUX5XTMBQMY7RUBELJFQ2CVNW4CWJ4PGIOHX5GAEC5Q2QJQAMMIA6N2RKZOF5ZY4IGSXJEWJ6QAWGWRBMXDOSLLJQAXHQUXYCIKD6SOMUEZNXBFBMRYQ44GBT4DQLD24VZ4YKDDYCO3QII"
+      },
+      "device": {
+        "supportedInterfaces": {}
+      }
+    }
+  },
+  "version": "1.0"
+}
+```
