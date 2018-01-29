@@ -15,6 +15,7 @@
   "license": "See license in ../LICENSE.txt",
   "dependencies": {
     "alexa-sdk": "^1.0.4",
+    "dateformat": "^2.0.0",
     "request": "^2.81.0"
   },
   "repository": {

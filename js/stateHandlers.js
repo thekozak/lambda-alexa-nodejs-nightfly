@@ -4,6 +4,7 @@ var Alexa = require('alexa-sdk');
 // var audioData = require('./audioAssets');
 var constants = require('./constants');
 var request = require('request');
+var dateFormat = require('dateformat');
 
 console.log("pre stateHandlers");
 
@@ -19,7 +20,8 @@ var stateHandlers = {
             // TODO 2: how to handle 0 events?
             // TODO 3: what if http get fails?
             // TODO 4: clean up all messaging to be Nightfly specific
-            httpGet('http://www.nightfly.fm/display/30.2478168,-97.7724371/2018-08-22', function(body) {
+
+            httpGet('http://www.nightfly.fm/display/30.2478168,-97.7724371/' + dateFormat(new Date(), "yyyy-mm-dd"), function(body) {
                 console.log("body=" + body);
                 var events = JSON.parse(body);
                 console.log("events= " + events);
@@ -51,11 +53,7 @@ var stateHandlers = {
 
                 var that = this;
 
-
-                var date = "%s-%s-%s"%(i.year, i.month, i.day)
-
-                // get list of tracks - TODO get today
-                httpGet('http://www.nightfly.fm/display/30.2478168,-97.7724371/'+ date, function(body) {
+                httpGet('http://www.nightfly.fm/display/30.2478168,-97.7724371/'+ dateFormat(new Date(), "yyyy-mm-dd"), function(body) {
                     console.log("body= " + body);
                     var events = JSON.parse(body);
                     console.log("events= " + events);
@@ -435,6 +433,7 @@ function httpGet(url, callback) {
     request(url, function (error, response, body) {
         if (!error && response.statusCode == 200) {
             if (callback) {
+                console.log("callback about to invoke " + callback);
                 callback(body);
             }
         } else {
