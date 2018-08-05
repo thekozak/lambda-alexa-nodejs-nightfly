@@ -1,7 +1,6 @@
 'use strict';
 
 var Alexa = require('alexa-sdk');
-// var audioData = require('./audioAssets');
 var constants = require('./constants');
 var request = require('request');
 var dateFormat = require('dateformat');
