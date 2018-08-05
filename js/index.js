@@ -16,5 +16,17 @@ exports.handler = function(event, context, callback){
         stateHandlers.resumeDecisionModeIntentHandlers,
         audioEventHandlers
     );
-    alexa.execute();
+
+    if (constants.debug) {
+        console.log("\n" + "******************* REQUEST **********************");
+        console.log("\n" + JSON.stringify(event, null, 2));
+    }
+
+    // var audioPlayerInterface = ((((event.context || {}).System || {}).device || {}).supportedInterfaces || {}).AudioPlayer;
+    // if (audioPlayerInterface === undefined) {
+    //     alexa.emit(':tell', 'Sorry, this skill is not supported on this device');
+    // }
+    // else {
+        alexa.execute();
+    // }
 };

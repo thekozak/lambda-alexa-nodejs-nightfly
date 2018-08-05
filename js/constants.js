@@ -1,13 +1,13 @@
 "use strict";
 
 module.exports = Object.freeze({
-    
+
     // App-ID. TODO: set to your own Skill App ID from the developer portal.
     appId : 'amzn1.ask.skill.ca116d16-c7da-4513-bcbe-b78b35e75d25',
-    
+
     //  DynamoDB Table name
     dynamoDBTableName : 'LongFormAudioSample',
-    
+
     /*
      *  States:
      *  START_MODE : Welcome state when the audio list has not begun.
@@ -20,5 +20,8 @@ module.exports = Object.freeze({
         START_MODE : '',
         PLAY_MODE : '_PLAY_MODE',
         RESUME_DECISION_MODE : '_RESUME_DECISION_MODE'
-    }
+    },
+
+    // when true, the skill logs additional detail, including the full request received from Alexa
+    debug : true
 });

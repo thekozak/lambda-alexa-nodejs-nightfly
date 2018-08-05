@@ -2,6 +2,10 @@
 
 The Alexa Skills Kit now allows developers to build skills that play long-form audio content on Alexa devices.  This sample project demonstrates how to use the new interfaces for triggering playback of audio and handling audio player input events.
 
+## KCK Notes
+1. Can't save objects to session state - save the string. JSON.parse(...) when needing them
+
+
 ## How to Run the Sample
 
 1. Clone the project and package the skill:
@@ -11,6 +15,7 @@ cd lambda-alexa-nodejs-nightfly/js
 npm install
 zip -r ../audio-player.zip *
 ```
+
 2. Create or login to an [AWS account](https://aws.amazon.com/). In the AWS Console:
 
     1. Create an AWS Role in IAM with access to Lambda, CloudWatch Logs and DynamoDB.

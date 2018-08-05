@@ -21,27 +21,28 @@ var stateHandlers = {
             // TODO 3: what if http get fails?
             // TODO 4: clean up all messaging to be Nightfly specific
 
+            var that = this;
             httpGet('http://www.nightfly.fm/display/30.2478168,-97.7724371/' + dateFormat(new Date(), "yyyy-mm-dd"), function(body) {
                 console.log("body=" + body);
                 var events = JSON.parse(body);
                 console.log("events= " + events);
-                this.attributes['events'] = body;
+                that.attributes['events'] = body;
 
                 // Initialize Attributes
-                this.attributes['playOrder'] = Array.apply(null, {length: events.length}).map(Number.call, Number);
-                this.attributes['index'] = 0;
-                this.attributes['offsetInMilliseconds'] = 0;
-                this.attributes['loop'] = true;
-                this.attributes['shuffle'] = false;
-                this.attributes['playbackIndexChanged'] = true;
+                that.attributes['playOrder'] = Array.apply(null, {length: events.length}).map(Number.call, Number);
+                that.attributes['index'] = 0;
+                that.attributes['offsetInMilliseconds'] = 0;
+                that.attributes['loop'] = true;
+                that.attributes['shuffle'] = false;
+                that.attributes['playbackIndexChanged'] = true;
                 //  Change state to START_MODE
-                this.handler.state = constants.states.START_MODE;
+                that.handler.state = constants.states.START_MODE;
 
                 var message = 'Welcome to Nightfly FM. You can say, play the audio to begin the playlist.';
                 var reprompt = 'You can say, play the audio, to begin.';
 
-                this.response.speak(message).listen(reprompt);
-                this.emit(':responseReady');
+                that.response.speak(message).listen(reprompt);
+                that.emit(':responseReady');
             });
 
 
@@ -52,13 +53,12 @@ var stateHandlers = {
                 console.log('PlayAudio start - does not have playOrder');
 
                 var that = this;
-
                 httpGet('http://www.nightfly.fm/display/30.2478168,-97.7724371/'+ dateFormat(new Date(), "yyyy-mm-dd"), function(body) {
                     console.log("body= " + body);
                     var events = JSON.parse(body);
                     console.log("events= " + events);
 
-                    that.attributes['events'] = events;
+                    that.attributes['events'] = body;
 
                     // Initialize Attributes
                     that.attributes['playOrder'] = Array.apply(null, {length: events.length}).map(Number.call, Number);
@@ -74,21 +74,20 @@ var stateHandlers = {
                 });
 
             } else {
-                console.log('PlayAudio start - has playOrder');
-                controller.play.call(this);
+                if (this.attributes['playOrder'] = 0) {
+                    var message = 'No concerts avaliable on this date. Please choose a different day.';
+                    this.response.speak(message).listen(message);
+                    this.emit(':responseReady');
+                } else {
+                    console.log('PlayAudio start - has playOrder');
+                    controller.play.call(this);
+                }
             }
-            if (this.attributes['playOrder'] = 0) {
-                var message = 'No concerts avaliable on this date. Please choose a different day.';
-                this.response.speak(message).listen(message);
-                this.emit(':responseReady');
-            } else {
-               console.log('PlayAudio start - has playOrder');
-               controller.play.call(this);
-            }
+
         },
         'AMAZON.HelpIntent' : function () {
             console.log("help intent");
-            var message = 'Welcome to Nightfly Radio. You can say, play the audio, to begin the playlist.';
+            var message = 'Welcome to Nightfly FM. You can say, play the audio, to begin the playlist.';
             this.response.speak(message).listen(message);
             this.emit(':responseReady');
         },
@@ -133,16 +132,17 @@ var stateHandlers = {
              */
             var message;
             var reprompt;
-            if (this.attributes['playbackFinished']) {
+            // console.log(this.attributes);
+            // if (this.attributes['playbackFinished']) {
                 this.handler.state = constants.states.START_MODE;
-                message = 'Welcome to the Nightfly Radio. You can say, play the audio to begin the playlist.';
+                message = 'Welcome to Nightfly FM. You can say, play the audio to begin the playlist.';
                 reprompt = 'You can say, play the audio, to begin.';
-            } else {
-                this.handler.state = constants.states.RESUME_DECISION_MODE;
-                message = 'You were listening to ' + this.attributes['events'][this.attributes['playOrder'][this.attributes['index']]].artist_name +
-                    ' Would you like to resume?';
-                reprompt = 'You can say yes to resume or no to play from the top.';
-            }
+            // } else {
+            //     this.handler.state = constants.states.RESUME_DECISION_MODE;
+            //     message = 'You were listening to ' + this.attributes['events'][this.attributes['playOrder'][this.attributes['index']]].artist_name +
+            //         ' Would you like to resume?';
+            //     reprompt = 'You can say yes to resume or no to play from the top.';
+            // }
 
             this.response.speak(message).listen(reprompt);
             this.emit(':responseReady');
@@ -162,7 +162,7 @@ var stateHandlers = {
         'AMAZON.HelpIntent' : function () {
             console.log("help intent");
             // This will called while audio is playing and a user says "ask <invocation_name> for help"
-            var message = 'You are listening to Nightfly Radio. You can say, Next or Previous to navigate through the playlist. ' +
+            var message = 'You are listening to Nightfly FM. You can say, Next or Previous to navigate through the playlist. ' +
                 'At any time, you can say Pause to pause the audio and Resume to resume.';
             this.response.speak(message).listen(message);
             this.emit(':responseReady');
@@ -193,7 +193,7 @@ var stateHandlers = {
          */
         'LaunchRequest' : function () {
             console.log("launch again");
-            var message = 'You were listening to ' + this.attributes['events'][this.attributes['playOrder'][this.attributes['index']]].artist_name +
+            var message = 'You were listening to ' + JSON.parse(this.attributes['events'])[this.attributes['playOrder'][this.attributes['index']]].artist_name +
                 ' Would you like to resume?';
             var reprompt = 'You can say yes to resume or no to play from the top.';
             this.response.speak(message).listen(reprompt);
@@ -202,7 +202,7 @@ var stateHandlers = {
         'AMAZON.YesIntent' : function () { controller.play.call(this) },
         'AMAZON.NoIntent' : function () { controller.reset.call(this) },
         'AMAZON.HelpIntent' : function () {
-            var message = 'You were listening to ' + this.attributes['events'][this.attributes['index']].artist_name +
+            var message = 'You were listening to ' + JSON.parse(this.attributes['events'])[this.attributes['index']].artist_name +
                 ' Would you like to resume?';
             var reprompt = 'You can say yes to resume or no to play from the top.';
             this.response.speak(message).listen(reprompt);
@@ -257,7 +257,7 @@ var controller = function () {
             console.log("play events", this.attributes['events']);
             console.log("play playOrder", this.attributes['playOrder']);
             console.log("play index", this.attributes['index']);
-            var podcast = this.attributes['events'][this.attributes['playOrder'][this.attributes['index']]];
+            var podcast = JSON.parse(this.attributes['events'])[this.attributes['index']];
 
             // TODO what if podcast is null?
 
@@ -272,6 +272,8 @@ var controller = function () {
             }
 
             var that = this;
+            console.log("podcast");
+            console.log(podcast);
             httpGet("http://www.nightfly.fm/stream/" + podcast.sc_track_id, function(body) {
                 that.response.audioPlayerPlay(playBehavior, body, token, null, offsetInMilliseconds);
                 that.emit(':responseReady');
@@ -295,7 +297,7 @@ var controller = function () {
             var index = this.attributes['index'];
             index += 1;
             // Check for last audio file.
-            if (index === this.attributes['events'].length) {
+            if (index === JSON.parse(this.attributes['events']).length) {
                 if (this.attributes['loop']) {
                     index = 0;
                 } else {
@@ -325,7 +327,7 @@ var controller = function () {
             // Check for last audio file.
             if (index === -1) {
                 if (this.attributes['loop']) {
-                    index = this.attributes['events'].length - 1;
+                    index = JSON.parse(this.attributes['events']).length - 1;
                 } else {
                     // Reached at the end. Thus reset state to start mode and stop playing.
                     this.handler.state = constants.states.START_MODE;
@@ -374,7 +376,7 @@ var controller = function () {
                 this.attributes['shuffle'] = false;
                 // Although changing index, no change in audio file being played as the change is to account for reordering playOrder
                 this.attributes['index'] = this.attributes['playOrder'][this.attributes['index']];
-                this.attributes['playOrder'] = Array.apply(null, {length: this.attributes['events'].length}).map(Number.call, Number);
+                this.attributes['playOrder'] = Array.apply(null, {length: JSON.parse(this.attributes['events']).length}).map(Number.call, Number);
             }
             controller.play.call(this);
         },
@@ -414,7 +416,7 @@ function shuffleOrder(callback) {
     console.log("shuffle order");
 
     // Algorithm : Fisher-Yates shuffle
-    var array = Array.apply(null, {length: this.attributes['events'].length}).map(Number.call, Number);
+    var array = Array.apply(null, {length: JSON.parse(this.attributes['events']).length}).map(Number.call, Number);
     var currentIndex = array.length;
     var temp, randomIndex;
 
