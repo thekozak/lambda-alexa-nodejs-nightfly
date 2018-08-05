@@ -15,11 +15,6 @@ var stateHandlers = {
         'LaunchRequest' : function () {
             console.log('LaunchRequest start');
 
-            // get list of tracks - TODO 1: get today's date for endpoint
-            // TODO 2: how to handle 0 events?
-            // TODO 3: what if http get fails?
-            // TODO 4: clean up all messaging to be Nightfly specific
-
             var that = this;
             httpGet('http://www.nightfly.fm/display/30.2478168,-97.7724371/' + dateFormat(new Date(), "yyyy-mm-dd"), function(body) {
                 console.log("body=" + body);
@@ -75,7 +70,7 @@ var stateHandlers = {
             } else {
                 if (this.attributes['playOrder'] = 0) {
                     var message = 'No concerts avaliable on this date. Please choose a different day.';
-                    this.response.speak(message).listen(message);
+                    this.response.speak(message);
                     this.emit(':responseReady');
                 } else {
                     console.log('PlayAudio start - has playOrder');
@@ -87,7 +82,8 @@ var stateHandlers = {
         'AMAZON.HelpIntent' : function () {
             console.log("help intent");
             var message = 'Welcome to Nightfly FM. You can say, play the audio, to begin the playlist.';
-            this.response.speak(message).listen(message);
+            var reprompt = 'You can say, play the audio, to begin the playlist..';
+            this.response.speak(message).listen(reprompt);
             this.emit(':responseReady');
         },
         'AMAZON.StopIntent' : function () {
@@ -161,9 +157,16 @@ var stateHandlers = {
         'AMAZON.HelpIntent' : function () {
             console.log("help intent");
             // This will called while audio is playing and a user says "ask <invocation_name> for help"
+
+            var artist = JSON.parse(this.attributes['events'])[this.attributes['index']].artist_name;
             var message = 'You are listening to Nightfly FM. You can say, Next or Previous to navigate through the playlist. ' +
                 'At any time, you can say Pause to pause the audio and Resume to resume.';
-            this.response.speak(message).listen(message);
+            if(artist){
+                message = 'You are listening to ' + JSON.parse(this.attributes['events'])[this.attributes['index']].artist_name +
+                ' on Nightfly FM. You can say, Next or Previous to navigate through the playlist. At any time, you can say Pause to pause the audio and Resume to resume.';
+            }
+
+            this.response.speak(message);
             this.emit(':responseReady');
         },
         'SessionEndedRequest' : function () {
@@ -192,7 +195,7 @@ var stateHandlers = {
          */
         'LaunchRequest' : function () {
             console.log("launch again");
-            var message = 'You were listening to ' + JSON.parse(this.attributes['events'])[this.attributes['playOrder'][this.attributes['index']]].artist_name +
+            var message = 'You were listening to ' + JSON.parse(this.attributes['events'])[this.attributes['index']].artist_name +
                 ' Would you like to resume?';
             var reprompt = 'You can say yes to resume or no to play from the top.';
             this.response.speak(message).listen(reprompt);
@@ -265,9 +268,10 @@ var controller = function () {
             this.attributes['enqueuedToken'] = null;
 
             if (canThrowCard.call(this)) {
-                var cardTitle = 'Playing ' + podcast.artist_name;
-                var cardContent = 'Playing ' + podcast.artist_name;
-                this.response.cardRenderer(cardTitle, cardContent, null);
+                var cardTitle = podcast.artist_name;
+                var cardContent = 'Playing tonight at ' + podcast.venue_name;
+                var images = {smallImageUrl : podcast.track_image, largeImageUrl : podcast.track_image};
+                this.response.cardRenderer(cardTitle, cardContent, images);
             }
 
             var that = this;
